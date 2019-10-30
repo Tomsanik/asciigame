@@ -60,7 +60,6 @@ def handle_events(events, timer):
             if e.used: e.unuse()
             else: e.use()
             e.run.remove(min(e.run))
-            print(e.run)
             if e.run == []:
                 events.remove(e)
                 del e

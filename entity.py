@@ -1,7 +1,7 @@
 import event_handling
 import tcod as libtcod
 from global_vars import gv
-from constants import *
+from constants import Const as C
 from inventory import CInventory
 
 
@@ -17,6 +17,8 @@ class Entity:
         self.def_color = color
         self.def_char = char
 
+        if self.type == C.EN_HUMAN:
+            self.fighter = Fighter(0, 1, 0, C.FR_NEUTRAL)
         self.fighter = None
         self.item = None
 
@@ -56,13 +58,13 @@ class Entity:
 
     def interact(self, ent, move): # interakce po dvojicich!! (ent.typ, self.typ)
         # vraci, zda se ma postava pohnout (move)
-        if ent.type == EN_ITEM:
+        if ent.type == C.EN_ITEM:
             #ADD: zobrazeni panelu s info o predmetu
             return True
-        elif (ent.type, self.type) == (EN_HUMAN, EN_HUMAN):
+        elif (ent.type, self.type) == (C.EN_HUMAN, C.EN_HUMAN):
             print("ÚTOOOK!!")
             ent.fighter.take_dmg(ent, self.fighter.atk)
-        elif ent.type == EN_MOVABLE:
+        elif ent.type == C.EN_MOVABLE:
             dx, dy, dh = move
             if ent.move(dx, dy, dh):
                 return True # pohni se
@@ -85,7 +87,7 @@ class Fighter:
         blik = event_handling.EventChangeChar(me, "C", [])
         gv.events.append(blik)
         blik.start()
-        me.type = EN_LOOTABLE
+        me.type = C.EN_LOOTABLE
 
     def take_dmg(self, me, atk):
         atk = max(0, atk-self.dfnc)
@@ -112,9 +114,9 @@ class Item:
             self.stats[key] = value
 
     def use_item(self, user, target):
-        if self.type==const.ITEM_HPPOT:
+        if self.type == C.ITEM_HPPOT:
             user.hp += self.type.value
-        if self.type==const.ITEM_SWORD1:
+        if self.type == C.ITEM_SWORD1:
             if user.equip['weap'] != None:
                 user.inventory.add(user.equip['weap'])
             user.equip['weap'] = self

@@ -6,7 +6,7 @@ from event_handling import EventChangeColor, EventChangeChar, handle_events
 from time import sleep
 import threading
 from global_vars import gv
-from constants import *
+from constants import Const as C
 
 def thread_timer():
     global timer
@@ -16,15 +16,15 @@ def thread_timer():
 
 def main():
 
-    player = Entity(37, 30, 1, "O", EN_HUMAN, libtcod.green, "Hrac")
-    player.fighter = Fighter(10, 100, 5, FR_PLAYER)
+    player = Entity(37, 30, 1, "O", C.EN_HUMAN, libtcod.green, "Hrac")
+    player.fighter = Fighter(10, 100, 5, C.FR_PLAYER)
 
-    npc =    Entity(30, 30, 1, "X", EN_HUMAN, libtcod.white, "NPC")
-    npc.fighter = Fighter(10, 100, 5, FR_ENEMY)
+    npc =    Entity(30, 30, 1, "X", C.EN_HUMAN, libtcod.white, "NPC")
+    npc.fighter = Fighter(10, 100, 5, C.FR_ENEMY)
 
-    box =    Entity(15, 15, 1, 254, EN_MOVABLE, libtcod.white, "Box")
-    pot =    Entity(30, 32, 1, '?', EN_ITEM, libtcod.white,"Healing Potion S")
-    pot.item = Item(ITEM_HPPOT1)
+    box =    Entity(15, 15, 1, 254, C.EN_MOVABLE, libtcod.white, "Box")
+    pot =    Entity(30, 32, 1, '?', C.EN_ITEM, libtcod.white,"Healing Potion S")
+    pot.item = Item(C.ITEM_HPPOT1)
     pot.item.add_stats(dmg = 0, heal = 20)
 
     gv.entities=[box, pot, player, npc ]
@@ -65,12 +65,12 @@ def main():
             npc.death()
 
         if inv:
-            gv.GAME_STATE = const.GS_INVENTORY
+            gv.GAME_STATE = C.GS_INVENTORY
 
-        if move and gv.GAME_STATE == GS_PLAY:
+        if move and gv.GAME_STATE == C.GS_PLAY:
             dx, dy, dh = move
             player.move(dx, dy, dh)
-        elif move and gv.GAME_STATE == GS_INVENTORY:
+        elif move and gv.GAME_STATE == C.GS_INVENTORY:
             dx, dy, dh = move
             player.inventory.move(dx,dy)
 

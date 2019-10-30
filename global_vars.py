@@ -1,6 +1,6 @@
 import tcod as libtcod
 from map_objects.game_map import CGameMap
-from constants import *
+from constants import Const as C
 
 
 class CGVars:
@@ -29,11 +29,11 @@ class CGVars:
         self.entities = []
         self.game_map = CGameMap(self.map_width, self.map_height)
 
-        self.GAME_STATE = GS_PLAY
+        self.GAME_STATE = C.GS_PLAY
 
         self.item_stats = {
-            ITEM_HPPOT1: {'heal': 20},
-            ITEM_SWORD1: {'heal': -20}
+            C.ITEM_HPPOT1: {'heal': 20},
+            C.ITEM_SWORD1: {'heal': -20}
         }
 
         #self.fighter_stats = {

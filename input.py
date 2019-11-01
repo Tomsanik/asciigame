@@ -13,12 +13,15 @@ def handle_keys(key):
         return {'move': (1, 0, 0)}
     elif key.vk == libtcod.KEY_SPACE:
         return {'swap': True}
+    elif chr(key.c) == "e":
+        return {'grab': True}
+    elif chr(key.c) == "i":
+        return {'inv': True}
+
     elif chr(key.c) == "w":
         return {'move': (0, 0, 1)}
     elif chr(key.c) == "s":
         return {'move': (0, 0, -1)}
-    elif chr(key.c) == "i":
-        return {'inv': True}
 
     if key.vk == libtcod.KEY_ENTER and key.lalt:
         # Alt+Enter: toggle full screen

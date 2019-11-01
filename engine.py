@@ -17,17 +17,21 @@ def thread_timer():
 def main():
 
     player = Entity(37, 30, 1, "O", C.EN_HUMAN, libtcod.green, "Hrac")
-    player.fighter = Fighter(10, 100, 5, C.FR_PLAYER)
+    player.fighter.set_stats(attack=10, defense=1, hp=100)
 
     npc =    Entity(30, 30, 1, "X", C.EN_HUMAN, libtcod.white, "NPC")
-    npc.fighter = Fighter(10, 100, 5, C.FR_ENEMY)
+    npc.fighter.set_stats(attack=10, defense=1, hp=50)
 
     box =    Entity(15, 15, 1, 254, C.EN_MOVABLE, libtcod.white, "Box")
-    pot =    Entity(30, 32, 1, '?', C.EN_ITEM, libtcod.white,"Healing Potion S")
-    pot.item = Item(C.ITEM_HPPOT1)
-    pot.item.add_stats(dmg = 0, heal = 20)
 
-    gv.entities=[box, pot, player, npc ]
+    pot =    Entity(30, 32, 1, '+', C.EN_ITEM, libtcod.white,"Healing Potion S")
+    pot.item.set_stats(heal = 20, price = 10)
+    pot.item.add_to_inventory(player.inventory)
+
+    sword = Entity(30, 32, 1, '?', C.EN_ITEM, libtcod.white, "Mighty Sword")
+    sword.item.set_stats(heal=-20, price=10)
+
+    gv.entities=[player, box, pot, npc, sword ]
 
     event = EventChangeColor(box, libtcod.red, [1,1,1])
     event2 = EventChangeChar(player,"V",[1,1,0.5,1,0.5])
@@ -58,14 +62,27 @@ def main():
         move = action.get('move')
         exit = action.get('exit')
         fullscreen = action.get('fullscreen')
+        grab = action.get('grab')
         swap = action.get('swap')
         inv = action.get('inv')
+
+        if grab:
+            if gv.GAME_STATE == C.GS_PLAY:
+                for i in gv.entities:
+                    if (i != player) and (i.type == C.EN_ITEM):
+                        if i.x == player.x and i.y == player.y:
+                            i.item.add_to_inventory(player.inventory)
+            elif gv.GAME_STATE == C.GS_INVENTORY:
+                player.inventory.items[player.inventory.y].use_item(player,player)
 
         if swap:
             npc.death()
 
         if inv:
-            gv.GAME_STATE = C.GS_INVENTORY
+            if gv.GAME_STATE == C.GS_INVENTORY:
+                gv.GAME_STATE = C.GS_PLAY
+            elif gv.GAME_STATE == C.GS_PLAY:
+                gv.GAME_STATE = C.GS_INVENTORY
 
         if move and gv.GAME_STATE == C.GS_PLAY:
             dx, dy, dh = move
@@ -75,7 +92,10 @@ def main():
             player.inventory.move(dx,dy)
 
         if exit:
-            return True
+            if gv.GAME_STATE != C.GS_PLAY:
+                gv.GAME_STATE = C.GS_PLAY
+            else:
+                return True
         if fullscreen:
             libtcod.console_set_fullscreen(not libtcod.console_is_fullscreen())
 

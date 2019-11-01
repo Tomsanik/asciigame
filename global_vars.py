@@ -13,6 +13,9 @@ class CGVars:
         self.map_width = 50
         self.map_height = 50
 
+        self.inv_x = self.map_width // 2 - 13
+        self.inv_y = self.map_height //2 - 13
+
         self.colors = {
             -4: libtcod.Color(255, 39, 39),
             -3: libtcod.Color(255, 85, 85),
@@ -31,10 +34,7 @@ class CGVars:
 
         self.GAME_STATE = C.GS_PLAY
 
-        self.item_stats = {
-            C.ITEM_HPPOT1: {'heal': 20},
-            C.ITEM_SWORD1: {'heal': -20}
-        }
+
 
         #self.fighter_stats = {
         #    const.EN_HUMAN:

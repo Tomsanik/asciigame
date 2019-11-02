@@ -17,21 +17,21 @@ def thread_timer():
 def main():
 
     player = Entity(37, 30, 1, "O", C.EN_HUMAN, libtcod.green, "Hrac")
-    player.fighter.set_stats(attack=10, defense=1, hp=100)
+    player.fighter.set_stats(False, attack=10, defense=1, hp=100)
 
     npc =    Entity(30, 30, 1, "X", C.EN_HUMAN, libtcod.white, "NPC")
-    npc.fighter.set_stats(attack=10, defense=1, hp=50)
+    npc.fighter.set_stats(False, attack=10, defense=1, hp=50)
 
     box =    Entity(15, 15, 1, 254, C.EN_MOVABLE, libtcod.white, "Box")
 
     pot =    Entity(30, 32, 1, '+', C.EN_ITEM, libtcod.white,"Healing Potion S")
     pot.item.set_stats(heal = 20, price = 10)
-    pot.item.add_to_inventory(player.inventory)
+    #pot.item.add_to_inventory(player.inventory)
 
-    sword = Entity(30, 32, 1, '?', C.EN_ITEM, libtcod.white, "Mighty Sword")
+    sword = Entity(25, 30, 1, '?', C.EN_ITEM, libtcod.white, "Mighty Sword")
     sword.item.set_stats(heal=-20, price=10)
 
-    gv.entities=[player, box, pot, npc, sword ]
+    gv.entities=[player, box, pot, npc, sword]
 
     event = EventChangeColor(box, libtcod.red, [1,1,1])
     event2 = EventChangeChar(player,"V",[1,1,0.5,1,0.5])

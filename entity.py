@@ -19,16 +19,12 @@ class Entity:
         self.inventory = CInventory(self) #inv musi mit uz Entity kvuli truhlam
         self.visible = True
 
+        self.fighter = None
+        self.item = None
         if self.type == C.EN_HUMAN:
             self.fighter = Fighter(self)
-            self.item = None
         elif self.type == C.EN_ITEM:
             self.item = Item(self)
-            self.fighter = None
-        else:
-            self.fighter = None
-            self.item = None
-
 
     def move(self, dx, dy, dh): #gm=game_map
         gm = gv.game_map
@@ -47,7 +43,7 @@ class Entity:
             self.x += dx
             self.y += dy
             self.h += dh
-            if self.type == 0: #mapu posouva pouze hrac
+            if self.type == C.EN_HUMAN: #mapu posouva pouze hrac
                 if self.x == gm.w:
                     gm.x += 1
                     self.x = 0
@@ -60,7 +56,6 @@ class Entity:
                 if (self.y < 0) and (gm.y > 0):
                     gm.y += -1
                     self.y = gm.h -1
-
             return True
         return False
 
@@ -76,8 +71,7 @@ class Entity:
             dx, dy, dh = move
             if ent.move(dx, dy, dh):
                 return True # pohni se
-        return False # zustan stat
-
+        return False
 
 class Fighter:
     def __init__(self, owner):
@@ -85,10 +79,12 @@ class Fighter:
         self.equip = {'weap': None, 'armor': None}
         self.me = owner
 
-    def set_stats(self, **kwargs):
-        #self.stats = {'attack': 0, 'hp': 0, 'defense': 0, 'fraction': 0}
-        for key, value in kwargs.items():
-            self.stats[key] = value
+    def stat(self, stat_name: str):
+        # vraci dany stat ze slovniku stats
+        if stat_name in self.stats:
+            return self.stats[stat_name]
+        else:
+            return 0
 
     def death(self):
         blik = event_handling.EventChangeChar(self.me, "C", [])
@@ -135,6 +131,6 @@ class Item:
         if done:
             self.me.x = x
             self.me.y = y
-            self.me.visible = False
+            gv.entities.remove(self.me)
         else:
             print('Predmet nelze pridat do intventare')

@@ -34,7 +34,7 @@ class CGVars:
 
         self.GAME_STATE = C.GS_PLAY
 
-
+        self.redraw_map = True
 
         #self.fighter_stats = {
         #    const.EN_HUMAN:

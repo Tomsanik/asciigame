@@ -1,15 +1,16 @@
 class CInventory:
     def __init__(self, owner):
         self.x, self.y = 0, 0
-        self.w = 5
+        self.w = 5 #pocet zalozek
         self.h = 5
         self.owner = owner
         self.items = []
 
     def move(self,dx,dy):
-        self.y  = (self.y + dy) % len(self.items)
-        """self.y += dy        
-        if self.y < 0: self.y = self.h-1        
+        self.y = (self.y + dy) % len(self.items)
+        self.x = (self.x + dx) % self.w
+        """self.y += dy
+        if self.y < 0: self.y = self.h-1
         if self.y >= self.h: self.y = 0"""
 
     def add(self,item):

@@ -17,10 +17,10 @@ def thread_timer():
 def main():
 
     player = Entity(37, 30, 1, "O", C.EN_HUMAN, libtcod.green, "Hrac")
-    player.fighter.set_stats(False, attack=10, defense=1, hp=100)
+    player.fighter.set_stats(attack=10, defense=1, hp=100)
 
     npc =    Entity(30, 30, 1, "X", C.EN_HUMAN, libtcod.white, "NPC")
-    npc.fighter.set_stats(False, attack=10, defense=1, hp=50)
+    npc.fighter.set_stats(attack=10, defense=1, hp=50)
 
     box =    Entity(15, 15, 1, 254, C.EN_MOVABLE, libtcod.white, "Box")
 
@@ -53,10 +53,9 @@ def main():
         handle_events(gv.events, gv.timer)
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
-
         render_all(con, gv.entities, gv.game_map, gv.screen_width, gv.screen_height, gv.colors)
         libtcod.console_flush()
-        #clear_all(con,entities)
+        clear_all(con,gv.entities)
 
         action = handle_keys(key)
         move = action.get('move')
@@ -81,12 +80,15 @@ def main():
         if inv:
             if gv.GAME_STATE == C.GS_INVENTORY:
                 gv.GAME_STATE = C.GS_PLAY
+                gv.redraw_map = True
             elif gv.GAME_STATE == C.GS_PLAY:
                 gv.GAME_STATE = C.GS_INVENTORY
 
         if move and gv.GAME_STATE == C.GS_PLAY:
             dx, dy, dh = move
             player.move(dx, dy, dh)
+            if dh != 0:
+                gv.redraw_map = True
         elif move and gv.GAME_STATE == C.GS_INVENTORY:
             dx, dy, dh = move
             player.inventory.move(dx,dy)
@@ -94,6 +96,7 @@ def main():
         if exit:
             if gv.GAME_STATE != C.GS_PLAY:
                 gv.GAME_STATE = C.GS_PLAY
+                gv.redraw_map = True
             else:
                 return True
         if fullscreen:

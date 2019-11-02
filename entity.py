@@ -79,6 +79,10 @@ class Fighter:
         self.equip = {'weap': None, 'armor': None}
         self.me = owner
 
+    def set_stats(self, add: bool=False, **kwargs): #available: heal (heal < 0 = dmg)
+        for key, value in kwargs.items():
+            self.stats[key] = value
+
     def stat(self, stat_name: str):
         # vraci dany stat ze slovniku stats
         if stat_name in self.stats:
@@ -109,7 +113,7 @@ class Item:
         self.req = {'lvl': 0}
         self.me = owner
 
-    def set_stats(self, **kwargs): #available: heal (heal < 0 = dmg)
+    def set_stats(self, add: bool=False, **kwargs): #available: heal (heal < 0 = dmg)
         for key, value in kwargs.items():
             self.stats[key] = value
 

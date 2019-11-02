@@ -5,17 +5,19 @@ from constants import Const as C
 
 def render_all(con, entities, gm, screen_width, screen_height, colors): #gm=game_map
     # Draw all the tiles in the game map
-    for y in range(gm.h):
-        for x in range(gm.w):
-            nx = x + gm.x * gm.w
-            ny = y + gm.y * gm.h
-            b = gm.policko(nx, ny).block
-            if max(b) - entities[0].h+1 in colors:
-                c = colors.get(max(b) - entities[0].h+1)
-            else: c = libtcod.black
-            #c = libtcod.white
-            libtcod.console_set_default_foreground(con, c)
-            libtcod.console_put_char(con, x, y, gm.tiles[nx][ny].char)
+    if gv.redraw_map:
+        for y in range(gm.h):
+            for x in range(gm.w):
+                nx = x + gm.x * gm.w
+                ny = y + gm.y * gm.h
+                b = gm.policko(nx, ny).block
+                if max(b) - entities[0].h+1 in colors:
+                    c = colors.get(max(b) - entities[0].h+1)
+                else: c = libtcod.black
+                #c = libtcod.white
+                libtcod.console_set_default_foreground(con, c)
+                libtcod.console_put_char(con, x, y, gm.tiles[nx][ny].char)
+        gv.redraw_map = False
 
     # Draw all visible entities in the list
     for entity in entities:
@@ -46,7 +48,7 @@ def draw_entity(con, entity, gm):
 
 
 def draw_inventory(con, inv):
-    i_x = 0
+    i_x = 0 #tab
     i_y = 0
     i_w, i_h = 20, 20
     libtcod.console_rect(con, i_x+1, i_y+1, i_w, i_h, True)
@@ -72,4 +74,7 @@ def draw_inventory(con, inv):
 
 def clear_entity(con, entity):
     # erase the character that represents this object
-    libtcod.console_put_char(con, entity.x, entity.y, ' ', libtcod.BKGND_NONE)
+    # vykresluje vždy bíle, při pohybu ve výčce to kreslí bílou cestičku
+    libtcod.console_put_char(con, entity.x, entity.y,
+    gv.game_map.policko(entity.x, entity.y).char,
+    libtcod.BKGND_NONE)

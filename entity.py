@@ -6,7 +6,7 @@ from inventory import CInventory
 
 
 class Entity:
-    def __init__(self, x, y, h, char, type, color, name):
+    def __init__(self, x:int, y:int, h:int, char:int, type:int, color, name:str):
         self.x = x
         self.y = y
         self.h = h
@@ -16,11 +16,19 @@ class Entity:
         self.color = color
         self.def_color = color
         self.def_char = char
+        self.inventory = CInventory(self) #inv musi mit uz Entity kvuli truhlam
+        self.visible = True
 
         if self.type == C.EN_HUMAN:
-            self.fighter = Fighter(0, 1, 0, C.FR_NEUTRAL)
-        self.fighter = None
-        self.item = None
+            self.fighter = Fighter(self)
+            self.item = None
+        elif self.type == C.EN_ITEM:
+            self.item = Item(self)
+            self.fighter = None
+        else:
+            self.fighter = None
+            self.item = None
+
 
     def move(self, dx, dy, dh): #gm=game_map
         gm = gv.game_map
@@ -63,7 +71,7 @@ class Entity:
             return True
         elif (ent.type, self.type) == (C.EN_HUMAN, C.EN_HUMAN):
             print("ÚTOOOK!!")
-            ent.fighter.take_dmg(ent, self.fighter.atk)
+            ent.fighter.take_dmg(self.fighter.stats['attack'])
         elif ent.type == C.EN_MOVABLE:
             dx, dy, dh = move
             if ent.move(dx, dy, dh):
@@ -72,51 +80,61 @@ class Entity:
 
 
 class Fighter:
-    def __init__(self, atk, hp, defe, fraction, auto = -1):
-        #if auto >= 0:
-            #self.type = auto
-            #self.
-        self.atk = atk
-        self.hp = hp
-        self.dfnc = defe
-        self.fraction = fraction
+    def __init__(self, owner):
+        self.stats = {'attack': 0, 'hp': 0, 'defense': 0, 'fraction': 0}
         self.equip = {'weap': None, 'armor': None}
-        self.inventory = CInventory(self)
+        self.me = owner
 
-    def death(self, me):
-        blik = event_handling.EventChangeChar(me, "C", [])
+    def set_stats(self, **kwargs):
+        #self.stats = {'attack': 0, 'hp': 0, 'defense': 0, 'fraction': 0}
+        for key, value in kwargs.items():
+            self.stats[key] = value
+
+    def death(self):
+        blik = event_handling.EventChangeChar(self.me, "C", [])
         gv.events.append(blik)
         blik.start()
-        me.type = C.EN_LOOTABLE
+        self.me.type = C.EN_LOOTABLE
 
-    def take_dmg(self, me, atk):
-        atk = max(0, atk-self.dfnc)
-        self.hp += -atk
-        blik = event_handling.EventChangeColor(me,libtcod.red,[0.1])
+    def take_dmg(self, atk): #vyhledove misto atk davat celeho utocnika
+        atk = max(0, atk-self.stats['defense'])
+        self.stats['hp'] += -atk
+        blik = event_handling.EventChangeColor(self.me,libtcod.red,[0.1])
         gv.events.append(blik)
         blik.start()
-        if self.hp <= 0:
-            self.death(me)
+        if self.stats['hp'] <= 0:
+            self.death()
 
 
 class Item:
-    def __init__(self, kind, price=0):
-        self.kind = kind
-        self.stats = None
-        self.price = price
-
-    def add_stats(self, **kwargs): #available: heal (heal < 0 = dmg)
+    def __init__(self, owner):
+        self.type = C.ITEM_CONSUM
         self.stats = {'heal':0}
+        self.req = {'lvl': 0}
+        self.me = owner
+
+    def set_stats(self, **kwargs): #available: heal (heal < 0 = dmg)
         for key, value in kwargs.items():
-            #if (key,value)==("auto", True): # autofill
-                #self.stats = const.item_stats.get(self.kind)
-                #break
             self.stats[key] = value
 
-    def use_item(self, user, target):
-        if self.type == C.ITEM_HPPOT:
-            user.hp += self.type.value
-        if self.type == C.ITEM_SWORD1:
+    def set_requirement(self, **kwargs):
+        for key, value in kwargs.items():
+            self.stats[key] = value
+
+    def use_item(self, user, target = None):
+        if self.type == C.ITEM_CONSUM:
+            user.fighter.stats['hp'] += self.stats['heal']
+            print(user.fighter.stats['hp'])
+        if self.type == C.ITEM_EQUIP:
             if user.equip['weap'] != None:
                 user.inventory.add(user.equip['weap'])
             user.equip['weap'] = self
+
+    def add_to_inventory(self,inv):
+        done, x, y = inv.add(self)
+        if done:
+            self.me.x = x
+            self.me.y = y
+            self.me.visible = False
+        else:
+            print('Predmet nelze pridat do intventare')

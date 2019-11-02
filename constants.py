@@ -1,4 +1,4 @@
-from enum import Enum
+from enum import Enum, auto
 
 class Const(Enum):
     #game states
@@ -19,13 +19,14 @@ class Const(Enum):
     CH_HigDen = 178
     CH_WhiteBox = 254
 
-    #entity types
+    #Entity types
     EN_HUMAN = 0 # lidi a destructibles
     EN_LOOTABLE = 1 # Truhla a mrtvola
     EN_ITEM = 2 # itemy
     EN_MOVABLE = 3 # pohyblive
 
-    #Item kinds
-    ITEM_HPPOT1 = 100
-    ITEM_SWORD1 = 101
-    ITEM_UNUSABLE = 199
+    #Item types
+    ITEM_CONSUM = auto()
+    ITEM_EQUIP = auto()
+    ITEM_QUEST = auto()
+    ITEM_GARBAGE = auto()

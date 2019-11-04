@@ -73,6 +73,7 @@ class Entity:
                 return True # pohni se
         return False
 
+
 class Fighter:
     def __init__(self, owner):
         self.stats = {'attack': 0, 'hp': 0, 'defense': 0, 'fraction': 0}
@@ -108,13 +109,16 @@ class Fighter:
 
 class Item:
     def __init__(self, owner):
-        self.type = C.ITEM_CONSUM
+        self.type = C.ITEM_GARBAGE
+        #dale potrebuji neco, abych rozeznal mec od brneni pri equipovani
         self.stats = {'heal':0}
         self.req = {'lvl': 0}
         self.me = owner
 
     def set_stats(self, add: bool=False, **kwargs): #available: heal (heal < 0 = dmg)
         for key, value in kwargs.items():
+            if key == 'type':
+                self.type = value
             self.stats[key] = value
 
     def set_requirement(self, **kwargs):

@@ -26,12 +26,12 @@ def main():
 
     pot =    Entity(30, 32, 1, '+', C.EN_ITEM, libtcod.white,"Healing Potion S")
     pot.item.set_stats(heal = 20, price = 10)
-    pot.item.add_to_inventory(player.inventory)
+    #pot.item.add_to_inventory(player.inventory)
 
-    sword = Entity(30, 32, 1, '?', C.EN_ITEM, libtcod.white, "Mighty Sword")
+    sword = Entity(25, 30, 1, '?', C.EN_ITEM, libtcod.white, "Mighty Sword")
     sword.item.set_stats(heal=-20, price=10)
 
-    gv.entities=[player, box, pot, npc, sword ]
+    gv.entities=[player, box, pot, npc, sword]
 
     event = EventChangeColor(box, libtcod.red, [1,1,1])
     event2 = EventChangeChar(player,"V",[1,1,0.5,1,0.5])
@@ -53,10 +53,9 @@ def main():
         handle_events(gv.events, gv.timer)
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
-
         render_all(con, gv.entities, gv.game_map, gv.screen_width, gv.screen_height, gv.colors)
         libtcod.console_flush()
-        #clear_all(con,entities)
+        clear_all(con,gv.entities)
 
         action = handle_keys(key)
         move = action.get('move')
@@ -81,12 +80,15 @@ def main():
         if inv:
             if gv.GAME_STATE == C.GS_INVENTORY:
                 gv.GAME_STATE = C.GS_PLAY
+                gv.redraw_map = True
             elif gv.GAME_STATE == C.GS_PLAY:
                 gv.GAME_STATE = C.GS_INVENTORY
 
         if move and gv.GAME_STATE == C.GS_PLAY:
             dx, dy, dh = move
             player.move(dx, dy, dh)
+            if dh != 0:
+                gv.redraw_map = True
         elif move and gv.GAME_STATE == C.GS_INVENTORY:
             dx, dy, dh = move
             player.inventory.move(dx,dy)
@@ -94,6 +96,7 @@ def main():
         if exit:
             if gv.GAME_STATE != C.GS_PLAY:
                 gv.GAME_STATE = C.GS_PLAY
+                gv.redraw_map = True
             else:
                 return True
         if fullscreen:

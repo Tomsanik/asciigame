@@ -25,11 +25,11 @@ def main():
     box =    Entity(15, 15, 1, 254, C.EN_MOVABLE, libtcod.white, "Box")
 
     pot =    Entity(30, 32, 1, '+', C.EN_ITEM, libtcod.white,"Healing Potion S")
-    pot.item.set_stats(heal = 20, price = 10)
+    pot.item.set_stats(heal = 20, price = 10, type=C.ITEM_CONSUM)
     #pot.item.add_to_inventory(player.inventory)
 
     sword = Entity(25, 30, 1, '?', C.EN_ITEM, libtcod.white, "Mighty Sword")
-    sword.item.set_stats(heal=-20, price=10)
+    sword.item.set_stats(heal=-20, price=10, type=C.ITEM_EQUIP)
 
     gv.entities=[player, box, pot, npc, sword]
 
@@ -41,7 +41,9 @@ def main():
 
     libtcod.console_init_root(gv.screen_width, gv.screen_height, 'libtcod tutorial revised',False,libtcod.RENDERER_OPENGL2,"F",True)
 
-    con = libtcod.console.Console(gv.screen_width, gv.screen_height)
+    c_map = libtcod.console.Console(gv.screen_width, gv.screen_height)
+    c_inv = libtcod.console.Console(22, 22)
+    con = {'map':c_map, 'inv':c_inv}
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
@@ -55,7 +57,7 @@ def main():
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
         render_all(con, gv.entities, gv.game_map, gv.screen_width, gv.screen_height, gv.colors)
         libtcod.console_flush()
-        clear_all(con,gv.entities)
+        clear_all(c_map,gv.entities)
 
         action = handle_keys(key)
         move = action.get('move')
@@ -87,8 +89,8 @@ def main():
         if move and gv.GAME_STATE == C.GS_PLAY:
             dx, dy, dh = move
             player.move(dx, dy, dh)
-            if dh != 0:
-                gv.redraw_map = True
+            #if dh != 0:
+                #gv.redraw_map = True
         elif move and gv.GAME_STATE == C.GS_INVENTORY:
             dx, dy, dh = move
             player.inventory.move(dx,dy)

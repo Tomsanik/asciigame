@@ -1,6 +1,7 @@
 #own
 venv.zip
 RUN_GAME.bat
+.idea/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

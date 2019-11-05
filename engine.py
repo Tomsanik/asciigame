@@ -17,21 +17,27 @@ def thread_timer():
 def main():
 
     player = Entity(37, 30, 1, "O", C.EN_HUMAN, libtcod.green, "Hrac")
-    player.fighter.set_stats(attack=10, defense=1, hp=100)
+    player.fighter.set_props(attack=10, defense=1, maxhp=100)
 
     npc =    Entity(30, 30, 1, "X", C.EN_HUMAN, libtcod.white, "NPC")
-    npc.fighter.set_stats(attack=10, defense=1, hp=50)
+    npc.fighter.set_props(attack=10, defense=1, maxhp=50)
 
     box =    Entity(15, 15, 1, 254, C.EN_MOVABLE, libtcod.white, "Box")
 
     pot =    Entity(30, 32, 1, '+', C.EN_ITEM, libtcod.white,"Healing Potion S")
-    pot.item.set_stats(heal = 20, price = 10, type=C.ITEM_CONSUM)
+    pot.item.set_props(hp = 20, price = 10, type=C.ITEM_CONSUM)
     #pot.item.add_to_inventory(player.inventory)
 
-    sword = Entity(25, 30, 1, '?', C.EN_ITEM, libtcod.white, "Mighty Sword")
-    sword.item.set_stats(heal=-20, price=10, type=C.ITEM_EQUIP)
+    sword = Entity(25, 30, 1, '?', C.EN_ITEM, libtcod.white, "Weak sword")
+    sword.item.set_props(attack=20, price=10, type=C.ITEM_WEAP)
 
-    gv.entities=[player, box, pot, npc, sword]
+    sword2 = Entity(25, 30, 1, '?', C.EN_ITEM, libtcod.white, "Super sword")
+    sword2.item.set_props(attack=30, price=10, type=C.ITEM_WEAP)
+
+    armor = Entity(20, 30, 1, '?', C.EN_ITEM, libtcod.white, "Super Armor")
+    armor.item.set_props(maxhp=20, defense=5, price=10, type=C.ITEM_ARMOR, requires = {'lvl':1, 'eyes':2})
+
+    gv.entities=[player, box, pot, npc, sword, sword2, armor]
 
     event = EventChangeColor(box, libtcod.red, [1,1,1])
     event2 = EventChangeChar(player,"V",[1,1,0.5,1,0.5])
@@ -72,7 +78,7 @@ def main():
                 for i in gv.entities:
                     if (i != player) and (i.type == C.EN_ITEM):
                         if i.x == player.x and i.y == player.y:
-                            i.item.add_to_inventory(player.inventory)
+                            i.item.collect(player.inventory)
             elif gv.GAME_STATE == C.GS_INVENTORY:
                 player.inventory.items[player.inventory.y].use_item(player,player)
 

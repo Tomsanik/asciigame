@@ -5,12 +5,13 @@ class CInventory:
     def __init__(self, owner):
         self.x, self.y = 0, 0
         self.tabs = [
-            [C.ITEM_EQUIP, C.ITEM_CONSUM, C.ITEM_GARBAGE, C.ITEM_QUEST],
+            [C.ITEM_WEAP, C.ITEM_ARMOR, C.ITEM_CONSUM, C.ITEM_GARBAGE, C.ITEM_QUEST],
             [C.ITEM_CONSUM],
-            [C.ITEM_EQUIP],
-            [C.ITEM_GARBAGE]
+            [C.ITEM_WEAP, C.ITEM_ARMOR],
+            [C.ITEM_GARBAGE],
+            [C.ITEM_QUEST]
         ]
-        self.w = 4 #pocet zalozek
+        self.w = 5 #pocet zalozek
         self.h = 10 # pocet zobrazovanych predmetu v jedne zalozce
         self.owner = owner
         self.items = []

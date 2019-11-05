@@ -76,13 +76,23 @@ class Entity:
 
 class Fighter:
     def __init__(self, owner):
-        self.stats = {'attack': 0, 'hp': 0, 'defense': 0, 'fraction': 0}
+        self.stats = {'attack': 0, 'hp': 0, 'maxhp':0, 'defense': 0, 'fraction': 0}
         self.equip = {'weap': None, 'armor': None}
         self.me = owner
 
-    def set_stats(self, add: bool=False, **kwargs): #available: heal (heal < 0 = dmg)
+    def set_props(self, add: bool=False, **kwargs): #available: heal (heal < 0 = dmg)
         for key, value in kwargs.items():
-            self.stats[key] = value
+            if add: # pricitani do statu
+                self.stats[key] += value
+            else: # nahrazovani hodnot statu
+                self.stats[key] = value
+            if key == 'maxhp':
+                self.stats['hp'] += value
+            elif key == 'hp':
+                if value > 0:
+                    self.take_dmg(value)
+                else:
+                    self.heal(value)
 
     def stat(self, stat_name: str):
         # vraci dany stat ze slovniku stats
@@ -97,48 +107,81 @@ class Fighter:
         blik.start()
         self.me.type = C.EN_LOOTABLE
 
-    def take_dmg(self, atk): #vyhledove misto atk davat celeho utocnika
-        atk = max(0, atk-self.stats['defense'])
+    def take_dmg(self, atk: int): #vyhledove misto atk davat celeho utocnika
+        #atk = attacker.fighter.stats.get('attack')
+        atk = max(0, atk-self.stats.get('defense'))
         self.stats['hp'] += -atk
+        print(self.stats['hp'])
         blik = event_handling.EventChangeColor(self.me,libtcod.red,[0.1])
         gv.events.append(blik)
         blik.start()
-        if self.stats['hp'] <= 0:
+        if self.stats.get('hp') <= 0:
             self.death()
+
+    #def heal_dmg(self, healer: Entity):
 
 
 class Item:
     def __init__(self, owner):
         self.type = C.ITEM_GARBAGE
-        #dale potrebuji neco, abych rozeznal mec od brneni pri equipovani
-        self.stats = {'heal':0}
+        #self.id = 0
+        self.props = {'id':0}
+        self.stats = {'heal':0, 'hp':0, 'attack':0}
         self.req = {'lvl': 0}
+        self.equipped = False
         self.me = owner
 
-    def set_stats(self, add: bool=False, **kwargs): #available: heal (heal < 0 = dmg)
+    def set_props(self, add: bool=False, **kwargs):
+        #available props: heal (heal < 0 = dmg), require = {...}, id
         for key, value in kwargs.items():
             if key == 'type':
                 self.type = value
-            self.stats[key] = value
+            elif key == 'requires':
+                self.req = value
+            else:
+                self.stats[key] = value
 
-    def set_requirement(self, **kwargs):
-        for key, value in kwargs.items():
-            self.stats[key] = value
-
-    def use_item(self, user, target = None):
+    def use_item(self, user: Entity, target: Entity = None):
         if self.type == C.ITEM_CONSUM:
-            user.fighter.stats['hp'] += self.stats['heal']
+            user.fighter.stats['hp'] += self.stats['hp']
             print(user.fighter.stats['hp'])
-        if self.type == C.ITEM_EQUIP:
-            if user.equip['weap'] != None:
-                user.inventory.add(user.equip['weap'])
-            user.equip['weap'] = self
 
-    def add_to_inventory(self,inv):
+        elif self.type in [C.ITEM_WEAP, C.ITEM_ARMOR]:
+            if self.type == C.ITEM_ARMOR: # zkusit zjednodusit
+                typ = 'armor'
+            else:
+                typ = 'weap'
+
+            st = user.fighter.stats
+            if user.fighter.equip[typ] != None: # presunuti equipnute zbrane zpet do inv
+                # odecist staty stareho equip itemu
+                for key, val in user.fighter.equip[typ].stats.items():
+                    if key in st:
+                        st[key] += -val
+                #user.inventory.add(user.fighter.equip[typ])
+                user.fighter.equip[typ].equipped = False
+            user.fighter.equip[typ] = self
+            self.equipped = True
+
+            for key, val in self.stats.items():
+                if key in st:
+                    # udelat pomoci set_stats
+                    #if key == 'hp':
+                    st[key] += val
+            print(user.fighter.stats)
+
+
+    def collect(self, inv):
         done, x, y = inv.add(self)
         if done:
             self.me.x = x
             self.me.y = y
             gv.entities.remove(self.me)
         else:
-            print('Predmet nelze pridat do intventare')
+            print('Predmet nelze pridat do inventare')
+
+    def drop(self, inv):
+        print('Žuch na zem')
+        # projit gv.entities, jestli na necem nestojim
+        # vratit item do gv.entities
+

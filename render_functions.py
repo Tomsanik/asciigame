@@ -53,11 +53,24 @@ def draw_entity(con, entity, gm):
 
 
 def draw_inventory(con, inv: CInventory):
-    i_w, i_h = 20, 20
+
+    i_w, i_h = 19, 20
     i_x = (gv.map_width-i_w-2) //2
     i_y = (gv.map_height-i_h-2) //2
 
     libtcod.console_rect(con, 1, 1, i_w, i_h, True)
+
+    # print tabs
+    libtcod.console_print(con, 1, 1, ' A ' + chr(179) + ' C ' + chr(179) + ' E ' + chr(179) + ' G ' + chr(179) + ' Q ')
+    if inv.x == 0:
+        libtcod.console_put_char(con, 4, 2, 192)
+        libtcod.console_hline(con, 5, 2, 20 - 4)
+    else:
+        libtcod.console_hline(con, 1, 2, -1 + inv.x * 4)
+        libtcod.console_put_char(con, inv.x * 4, 2, 217)
+        libtcod.console_put_char(con, (inv.x + 1) * 4, 2, 192)
+        libtcod.console_hline(con, (inv.x + 1) * 4 + 1, 2, 20 - (inv.x + 1) * 4)
+
     libtcod.console_put_char(con, 0, 0, 218)
     libtcod.console_hline(con, 1, 0, 20)
     libtcod.console_put_char(con, 1+i_w, 0, 191)
@@ -69,23 +82,16 @@ def draw_inventory(con, inv: CInventory):
     libtcod.console_hline(con, 1, 1+i_h, 20)
     libtcod.console_put_char(con, 1+i_w, 1+i_h, 217)
 
-    #print tabs
-    libtcod.console_print(con, 1, 1, ' A '+chr(179)+' C '+chr(179)+' E '+chr(179)+' G '+chr(179))
-    if inv.x == 0:
-        libtcod.console_put_char(con, 4, 2, 192)
-        libtcod.console_hline(con, 5, 2, 20-4)
-    else:
-        libtcod.console_hline(con, 1, 2, -1+inv.x*4)
-        libtcod.console_put_char(con, inv.x*4, 2, 217)
-        libtcod.console_put_char(con, (inv.x+1)*4, 2, 192)
-        libtcod.console_hline(con, (inv.x+1)*4+1, 2, 20-(inv.x+1)*4)
 
     i = 0
+    str = ""
     for item in inv.items:
         if item.type in inv.tabs[inv.x]:
             if i == inv.y:
                 libtcod.console_set_default_foreground(con, libtcod.green)
-            libtcod.console_print(con, 1, 3+i, item.me.name)
+            if item.equipped: str =  "(E)"
+            else: str = ""
+            libtcod.console_print(con, 1, 3+i, "{0:15} {1}".format(item.me.name, str))
             libtcod.console_set_default_foreground(con, libtcod.white)
             i += 1
     libtcod.console_blit(con, -i_x, -i_y, i_w+i_x+2, i_h+i_y+2, 0, 0, 0)

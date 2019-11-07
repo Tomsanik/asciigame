@@ -1,4 +1,2 @@
-cd ../venv/Scripts
-call activate.bat
-cd ../../asciigame
+call venv/Scripts/activate.bat
 pythonw engine.py

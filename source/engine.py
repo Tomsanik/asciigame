@@ -43,7 +43,7 @@ def main():
     event2 = EventChangeChar(player,"V",[1,1,0.5,1,0.5])
     gv.events = [event, event2]
 
-    libtcod.console_set_custom_font('fonts/Cheepicus_15x15.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
+    libtcod.console_set_custom_font('../fonts/Cheepicus_15x15.png', libtcod.FONT_TYPE_GREYSCALE | libtcod.FONT_LAYOUT_ASCII_INROW)
 
     libtcod.console_init_root(gv.screen_width, gv.screen_height, 'libtcod tutorial revised',False,libtcod.RENDERER_OPENGL2,"F",True)
 

@@ -15,9 +15,10 @@ class CInventory:
         self.h = 10 # pocet zobrazovanych predmetu v jedne zalozce
         self.owner = owner
         self.items = []
+        self.tab_items = []
 
     def move(self, dx, dy):
-        items = [] # items from chosen inventory section
+        items = [] # items from chosen inventory tab
         for i in self.items:
             if i.type in self.tabs[self.x]:
                 items.append(i)
@@ -31,6 +32,16 @@ class CInventory:
         """self.y += dy
         if self.y < 0: self.y = self.h-1
         if self.y >= self.h: self.y = 0"""
+
+    def get_selected(self):
+        items = []  # items from chosen inventory tab
+        for i in self.items:
+            if i.type in self.tabs[self.x]:
+                items.append(i)
+        if len(items) > 0:
+            return items[self.y]
+        else:
+            return None
 
     def add(self, item):
         if item not in self.items:

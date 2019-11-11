@@ -7,7 +7,7 @@ class CGVars:
     def __init__(self):
         self.timer = 0
         self.events = []
-        self.screen_width = 50
+        self.screen_width = 72
         self.screen_height = 50
 
         self.map_width = 50

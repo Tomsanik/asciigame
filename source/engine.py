@@ -15,6 +15,8 @@ def thread_timer():
         gv.timer += 0.05
 
 def main():
+    cursor = Entity(37, 30, 1, "+", C.EN_CURSOR, libtcod.white, "")
+    cursor.visible = False
 
     player = Entity(37, 30, 1, "O", C.EN_HUMAN, libtcod.green, "Hrac")
     player.fighter.set_props(attack=10, defense=1, maxhp=100)
@@ -37,7 +39,8 @@ def main():
     armor = Entity(20, 30, 1, '?', C.EN_ITEM, libtcod.white, "Super Armor")
     armor.item.set_props(maxhp=20, defense=5, price=10, type=C.ITEM_ARMOR, requires = {'lvl':1, 'eyes':2})
 
-    gv.entities=[player, box, pot, npc, sword, sword2, armor]
+    # na 1. miste hrac, na -1. miste kurzor
+    gv.entities=[player, box, pot, npc, sword, sword2, armor, cursor]
 
     event = EventChangeColor(box, libtcod.red, [1,1,1])
     event2 = EventChangeChar(player,"V",[1,1,0.5,1,0.5])
@@ -49,7 +52,9 @@ def main():
 
     c_map = libtcod.console.Console(gv.screen_width, gv.screen_height)
     c_inv = libtcod.console.Console(22, 22)
-    con = {'map':c_map, 'inv':c_inv}
+    c_info = libtcod.console.Console(22, 32)
+    c_gmst = libtcod.console.Console(22, 3)
+    cons = {'map':c_map, 'inv':c_inv, 'info':c_info, 'gmst':c_gmst}
 
     key = libtcod.Key()
     mouse = libtcod.Mouse()
@@ -61,7 +66,7 @@ def main():
         handle_events(gv.events, gv.timer)
 
         libtcod.sys_check_for_event(libtcod.EVENT_KEY_PRESS, key, mouse)
-        render_all(con, gv.entities, gv.game_map, gv.screen_width, gv.screen_height, gv.colors)
+        render_all(cons, gv.entities, gv.game_map, gv.colors)
         libtcod.console_flush()
         clear_all(c_map,gv.entities)
 
@@ -83,7 +88,15 @@ def main():
                 player.inventory.items[player.inventory.y].use_item(player,player)
 
         if swap:
-            npc.death()
+            if gv.GAME_STATE == C.GS_PLAY:
+                gv.GAME_STATE = C.GS_PAUSE
+                cursor.visible = True
+            elif gv.GAME_STATE == C.GS_PAUSE:
+                gv.GAME_STATE = C.GS_PLAY
+                cursor.visible = False
+                cursor.x = player.x
+                cursor.y = player.y
+                cursor.h = player.h
 
         if inv:
             if gv.GAME_STATE == C.GS_INVENTORY:
@@ -92,14 +105,19 @@ def main():
             elif gv.GAME_STATE == C.GS_PLAY:
                 gv.GAME_STATE = C.GS_INVENTORY
 
-        if move and gv.GAME_STATE == C.GS_PLAY:
-            dx, dy, dh = move
-            player.move(dx, dy, dh)
-            #if dh != 0:
-                #gv.redraw_map = True
-        elif move and gv.GAME_STATE == C.GS_INVENTORY:
-            dx, dy, dh = move
-            player.inventory.move(dx,dy)
+        if move:
+            if gv.GAME_STATE == C.GS_PLAY:
+                dx, dy, dh = move
+                if player.move(dx, dy, dh):
+                    cursor.move(dx, dy, dh)
+                #if dh != 0:
+                    #gv.redraw_map = True
+            elif gv.GAME_STATE == C.GS_INVENTORY:
+                dx, dy, dh = move
+                player.inventory.move(dx,dy)
+            elif gv.GAME_STATE == C.GS_PAUSE:
+                dx, dy, dh = move
+                cursor.move(dx, dy, dh)
 
         if exit:
             if gv.GAME_STATE != C.GS_PLAY:

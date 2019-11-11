@@ -24,6 +24,7 @@ class Const(Enum):
     EN_LOOTABLE = auto() # Truhla a mrtvola
     EN_ITEM = auto() # itemy
     EN_MOVABLE = auto() # pohyblive
+    EN_CURSOR = auto() #kurzor
 
     #Item types
     ITEM_CONSUM = auto()

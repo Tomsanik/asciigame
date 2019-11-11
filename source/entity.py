@@ -61,6 +61,8 @@ class Entity:
 
     def interact(self, ent, move): # interakce po dvojicich!! (ent.typ, self.typ)
         # vraci, zda se ma postava pohnout (move)
+        if self.type == C.EN_CURSOR:
+            return True
         if ent.type == C.EN_ITEM:
             #ADD: zobrazeni panelu s info o predmetu
             return True
@@ -126,7 +128,7 @@ class Item:
         self.type = C.ITEM_GARBAGE
         #self.id = 0
         self.props = {'id':0}
-        self.stats = {'heal':0, 'hp':0, 'attack':0}
+        self.stats = {'heal': 0, 'hp': 0, 'attack': 0}
         self.req = {'lvl': 0}
         self.equipped = False
         self.me = owner
